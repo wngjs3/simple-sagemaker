@@ -44,7 +44,12 @@ def main():
     ###################################
     ## 커맨드 인자 처리
     ###################################    
-    
+    def train_sagemaker(args):
+        if os.environ.get('SM_CURRENT_HOST') is not None:
+            args.train_data_path = os.environ.get('SM_CHANNEL_INPUTDATA')
+            args.model_dir = os.environ.get('SM_MODEL_DIR')
+            args.output_data_dir = os.environ.get('SM_OUTPUT_DATA_DIR')
+        return args
     # Hyperparameters are described here
     parser.add_argument('--scale_pos_weight', type=int, default=50)    
     parser.add_argument('--num_round', type=int, default=999)
@@ -60,6 +65,9 @@ def main():
     parser.add_argument('--output-data-dir', type=str, default='../output')
 
     args = parser.parse_args()
+
+    ## Check Training Sagemaker
+    args = train_sagemaker(args)
 
     ###################################
     ## 데이터 세트 로딩 및 변환
